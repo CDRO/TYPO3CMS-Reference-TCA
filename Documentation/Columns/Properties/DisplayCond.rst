@@ -163,6 +163,48 @@ Using :code:`OR` and :code:`AND` within FlexForms works like this:
    </displayCond>
 
 
+Creating your own :code:`USER` object
+-------------------------------------
+
+As explained above, the :code:`USER` gets 4 parameters. These can be used like so:
+
+.. code-block:: php
+
+   <?php
+   
+   namespace Vendor\Extension\User;
+   
+   final class FieldCondition
+   {
+       /**
+        * Decide on your own terms, how you'd like to decide to display a field.
+        *
+        * @param array $parameters
+        * @param object $caller
+        * @return bool
+        */
+       public function myFieldCondition(array $parameters, $object): bool
+       {
+           // $parameters is built like this:
+           // $parameters['record']: the current record
+           // $parameters['flexContent']: flexform definition (if called from a flexform)
+           // $parameters['flexFormValueKey']: the value key (if called from a flexform, default is vDEF)
+           // $parameters['conditionParameters']: this is a split list of the parameters given in the configuration
+           // example: 'displayCond' => 'USER:' . Vendor\Extension\User\FieldCondition::class . '->myFieldCondition:my:parameters' will result in
+           // an array with the values [0 => 'my', 1 => 'parameters']
+           if($record['some_value'] > $parameters['conditionParameters'][1]) {
+               // do some more stuff
+               
+               return true;
+           }
+           
+           return false;
+       }
+   
+   }
+
+
+
 Access values in a flexform
 ---------------------------
 
@@ -187,3 +229,5 @@ Flex form fields can access field values from various different sources:
     exactly is broken. This helps with finding bugs in a display condition
     configuration and reduces headaches with "Why is my field shown or not
     shown?".
+    
+    
